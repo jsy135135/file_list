@@ -1,6 +1,8 @@
 from flask import Flask, render_template, send_from_directory
 import os
 import time
+
+from werkzeug.utils import redirect
 app = Flask(__name__)
 
 dirpath = 'list'
@@ -18,6 +20,9 @@ def size_format(size):
     elif 1000000000000 <= size:
         return '%.1f' % float(size/1000000000000) + 'TB'
 
+@app.route("/",methods=['GET'])
+def index():
+    return redirect('/list')
 
 @app.route("/list", methods=['GET'])
 def list():
@@ -58,8 +63,9 @@ def getfile(filename):
             new_filelist.append(filedict)
         return render_template('list.html', filedata=new_filelist, current_path=new_dirpath.replace('\\', '/'), parent_path=os.path.dirname(new_dirpath).replace('\\', '/'))
     else:
-        return send_from_directory(dirpath, filename=filename)
-
+        print('='*20)
+        print(dirpath,filename)
+        return send_from_directory(dirpath,'', filename=filename)
 
 if __name__ == '__main__':
     print(app.url_map)
